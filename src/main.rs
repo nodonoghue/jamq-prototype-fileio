@@ -4,6 +4,10 @@ use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 fn main() -> std::io::Result<()> {
+    //Tried another way of getting the current timestamp, as UNIX Epoc.
+    //This time using the std::time lib and in milliseconds.
+    //I could have done the same by importing chrono as well.
+    //I wanted to stick with std libs for my learning prototypes.
     let time = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -39,6 +43,7 @@ fn write_to_file(path: String) {
     //Write to the file, unwrap appears to unwrap the underlying type from the result?
     //Will handle a file write failure with, I believe, a panic! and message
     //TODO:  Learn more about the specifics of unwrap()
+    //DONE:  Unwrap does return the underlying type if the return is an option/result
     file.unwrap()
         .write_all(contents.as_bytes())
         .expect("Error writing to file");
