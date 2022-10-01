@@ -1,15 +1,17 @@
-use chrono::Utc;
 use std::fs::File;
 use std::io::prelude::*;
 use std::path::Path;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 fn main() -> std::io::Result<()> {
-    //Get current timestamp for use in file name
-    let dt = Utc::now();
-    let timestamp = dt.timestamp();
+    let time = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis();
 
     //Create the file name, could also be the full path to the file.
-    let mut path = timestamp.to_string();
+    //let mut path = timestamp.to_string();
+    let mut path = time.to_string();
     path.push_str(".log");
 
     //check if the file exists
