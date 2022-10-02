@@ -8,36 +8,60 @@ fn main() -> std::io::Result<()> {
     //This time using the std::time lib and in milliseconds.
     //I could have done the same by importing chrono as well.
     //I wanted to stick with std libs for my learning prototypes.
-    let time = SystemTime::now()
+    let timestamp = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_millis();
 
     //Create the file name, could also be the full path to the file.
-    //let mut path = timestamp.to_string();
-    let mut path = time.to_string();
+    let mut path = timestamp.to_string();
 
     //Changed the file extension to see what happens.  More inline with potential project design
     path.push_str(".jmq");
 
     //check if the file exists
     if Path::new(&path).is_file() {
-        //If it exists already, unlikely with update to naming process, write to the existing file
-        write_to_file(path);
+        //call file io wrapper function
+        perform_file_io(&path)
     } else {
-        //Otherwise create the file, then write to the new file.
+        //create the file since it didn't exist
         File::create(&path)?;
-        write_to_file(path);
+
+        //call file io wrapper function
+        perform_file_io(&path);
     }
 
     Ok(())
 }
 
-//Writes to the specified file
-fn write_to_file(path: String) {
+//wrap calls to all file io functions in a single function call
+//takes only a reference to the path variable as an argument
+fn perform_file_io(path: &String) {
+    //open the file to get the file struct
+    let mut file = open_file(path);
+
+    //write to the file
+    file = write_to_file(file);
+
+    //get file permissions struct
+    let file_permissions = get_file_permissions(&file);
+
+    //call function to set permissions to readonly
+    set_readonly(file, file_permissions);
+}
+
+fn open_file(path: &String) -> File {
     //Open the file
     let file_open_result = File::options().append(true).open(path);
-    let mut file = file_open_result.unwrap();
+
+    //Unwraps the open result to get the file
+    //returns the file struct
+    file_open_result.unwrap()
+}
+
+//Writes to the specified file
+fn write_to_file(mut file: File) -> File {
+    //Open the file
 
     //Set the contents to write, currently hard coded for proof of concept
     //TODO:  Refactor later to make the contents an argument passed into the function, not hard coded
@@ -48,27 +72,25 @@ fn write_to_file(path: String) {
     file.write_all(contents.as_bytes())
         .expect("Error writing to file");
 
-    //Get the file permissions set to read_only
-    //Found to avoid fighting with the borrow checker I would pass a reference of file
-    //to my function, then return the permissions struct to use for setting to readonly
-    let file_permissions = set_readoonly(&file);
-
-    //Apply updated permissions to file
-    file.set_permissions(file_permissions)
-        .expect("Error setting file permissions");
+    //return the file
+    file
 }
 
 //Gets the permissions stuct by using a reference pointer to file
-fn set_readoonly(file: &File) -> Permissions {
+fn get_file_permissions(file: &File) -> Permissions {
     //Gete the meta data and unwrwap the result
     let file_metadata = file.metadata();
 
     //Create the permissions struct as mutable to allow changes to be made
-    let mut file_permissions = file_metadata.unwrap().permissions();
+    //return the Permissions struct
+    file_metadata.unwrap().permissions()
+}
 
+fn set_readonly(file: File, mut file_permissions: Permissions) {
     //set readonly to true
     file_permissions.set_readonly(true);
 
-    //return the permissions struct
-    file_permissions
+    //apply permissions to file
+    file.set_permissions(file_permissions)
+        .expect("Error setting file permissions");
 }
