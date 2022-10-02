@@ -86,6 +86,7 @@ fn get_file_permissions(file: &File) -> Permissions {
     file_metadata.unwrap().permissions()
 }
 
+//function to set file permissions to read only
 fn set_readonly(file: File, mut file_permissions: Permissions) {
     //set readonly to true
     file_permissions.set_readonly(true);
