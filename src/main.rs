@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::fs::{File, Permissions};
 use std::io::prelude::*;
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -16,7 +16,9 @@ fn main() -> std::io::Result<()> {
     //Create the file name, could also be the full path to the file.
     //let mut path = timestamp.to_string();
     let mut path = time.to_string();
-    path.push_str(".log");
+
+    //Changed the file extension to see what happens.  More inline with potential project design
+    path.push_str(".jmq");
 
     //check if the file exists
     if Path::new(&path).is_file() {
@@ -34,17 +36,39 @@ fn main() -> std::io::Result<()> {
 //Writes to the specified file
 fn write_to_file(path: String) {
     //Open the file
-    let file = File::options().append(true).open(path);
+    let file_open_result = File::options().append(true).open(path);
+    let mut file = file_open_result.unwrap();
 
     //Set the contents to write, currently hard coded for proof of concept
     //TODO:  Refactor later to make the contents an argument passed into the function, not hard coded
     let contents = String::from("Hello, world!");
 
     //Write to the file, unwrap appears to unwrap the underlying type from the result?
-    //Will handle a file write failure with, I believe, a panic! and message
-    //TODO:  Learn more about the specifics of unwrap()
-    //DONE:  Unwrap does return the underlying type if the return is an option/result
-    file.unwrap()
-        .write_all(contents.as_bytes())
+    //Will handle a file write failure with a panic! and message in the terminal
+    file.write_all(contents.as_bytes())
         .expect("Error writing to file");
+
+    //Get the file permissions set to read_only
+    //Found to avoid fighting with the borrow checker I would pass a reference of file
+    //to my function, then return the permissions struct to use for setting to readonly
+    let file_permissions = set_readoonly(&file);
+
+    //Apply updated permissions to file
+    file.set_permissions(file_permissions)
+        .expect("Error setting file permissions");
+}
+
+//Gets the permissions stuct by using a reference pointer to file
+fn set_readoonly(file: &File) -> Permissions {
+    //Gete the meta data and unwrwap the result
+    let file_metadata = file.metadata();
+
+    //Create the permissions struct as mutable to allow changes to be made
+    let mut file_permissions = file_metadata.unwrap().permissions();
+
+    //set readonly to true
+    file_permissions.set_readonly(true);
+
+    //return the permissions struct
+    file_permissions
 }
