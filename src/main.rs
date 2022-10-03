@@ -19,17 +19,14 @@ fn main() -> std::io::Result<()> {
     //Changed the file extension to see what happens.  More inline with potential project design
     path.push_str(".jmq");
 
-    //check if the file exists
-    if Path::new(&path).is_file() {
-        //call file io wrapper function
-        perform_file_io(&path)
-    } else {
+    //if a file does not exist, creat ie
+    if !Path::new(&path).is_file() {
         //create the file since it didn't exist
         File::create(&path)?;
-
-        //call file io wrapper function
-        perform_file_io(&path);
     }
+
+    //call file io wrapper function
+    perform_file_io(&path);
 
     Ok(())
 }
