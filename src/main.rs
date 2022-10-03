@@ -8,22 +8,12 @@ fn main() -> std::io::Result<()> {
     //This time using the std::time lib and in milliseconds.
     //I could have done the same by importing chrono as well.
     //I wanted to stick with std libs for my learning prototypes.
-    let timestamp = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .as_millis();
+
+    //Get current timestamp in milliseconds
+    let timestamp = get_current_timestamp_millis();
 
     //Create the file name, could also be the full path to the file.
-    let mut path = timestamp.to_string();
-
-    //Changed the file extension to see what happens.  More inline with potential project design
-    path.push_str(".jmq");
-
-    //if a file does not exist, creat ie
-    if !Path::new(&path).is_file() {
-        //create the file since it didn't exist
-        File::create(&path)?;
-    }
+    let path = get_path(timestamp);
 
     //call file io wrapper function
     perform_file_io(&path);
@@ -31,9 +21,33 @@ fn main() -> std::io::Result<()> {
     Ok(())
 }
 
+//function to get the current timestamp as millis
+fn get_current_timestamp_millis() -> u128 {
+    //uses std lib to get the current timestamp as a diration since epoch
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis()
+}
+
+//function to return the path string, accempts the timestamp u128
+fn get_path(timestamp: u128) -> String {
+    //set the initial file name to the timestamp
+    let mut path = timestamp.to_string();
+
+    //append the file extension
+    path.push_str(".jmq");
+
+    //return the path
+    path
+}
+
 //wrap calls to all file io functions in a single function call
 //takes only a reference to the path variable as an argument
 fn perform_file_io(path: &String) {
+    //Check if the file exists and create if it does not
+    create_file(path);
+
     //open the file to get the file struct
     let mut file = open_file(path);
 
@@ -45,6 +59,12 @@ fn perform_file_io(path: &String) {
 
     //call function to set permissions to readonly
     set_readonly(file, file_permissions);
+}
+
+fn create_file(path: &String) {
+    if !Path::new(path).is_file() {
+        File::create(path).expect("Error creating file");
+    }
 }
 
 fn open_file(path: &String) -> File {
