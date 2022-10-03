@@ -1,7 +1,14 @@
+use serde::{Deserialize, Serialize};
+use std::fs;
 use std::fs::{File, Permissions};
 use std::io::prelude::*;
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
+
+#[derive(Serialize, Deserialize)]
+struct Configs {
+    output_directory: String,
+}
 
 fn main() -> std::io::Result<()> {
     //Tried another way of getting the current timestamp, as UNIX Epoc.
@@ -9,14 +16,17 @@ fn main() -> std::io::Result<()> {
     //I could have done the same by importing chrono as well.
     //I wanted to stick with std libs for my learning prototypes.
 
+    //read the settings file
+    let output_directory: String = get_output_directory();
+
     //Get current timestamp in milliseconds
     let timestamp = get_current_timestamp_millis();
 
     //Create the file name, could also be the full path to the file.
-    let path = get_path(timestamp);
+    let full_path = get_path(timestamp, &output_directory);
 
     //call file io wrapper function
-    perform_file_io(&path);
+    perform_file_io(&full_path, &output_directory);
 
     Ok(())
 }
@@ -31,9 +41,12 @@ fn get_current_timestamp_millis() -> u128 {
 }
 
 //function to return the path string, accempts the timestamp u128
-fn get_path(timestamp: u128) -> String {
+fn get_path(timestamp: u128, output_directory: &String) -> String {
     //set the initial file name to the timestamp
-    let mut path = timestamp.to_string();
+    let mut path = output_directory.to_owned();
+
+    //Add the file name
+    path = path + &timestamp.to_string();
 
     //append the file extension
     path.push_str(".jmq");
@@ -42,9 +55,27 @@ fn get_path(timestamp: u128) -> String {
     path
 }
 
+fn get_output_directory() -> String {
+    let file_name: String = String::from("settings.json");
+    //Read the file
+    let contents = fs::read_to_string(file_name).expect("Error reading file!");
+
+    //Convert from String to &str
+    let contents_str: &str = &contents[..];
+
+    //deserialize into a struct
+    let configs: Configs = serde_json::from_str(contents_str).unwrap();
+
+    //return the output_directory setting
+    configs.output_directory
+}
+
 //wrap calls to all file io functions in a single function call
-//takes only a reference to the path variable as an argument
-fn perform_file_io(path: &String) {
+//takes only a reference to the path variable as an argumentc
+fn perform_file_io(path: &String, output_directory: &String) {
+    //Check if the directory exists and create if it does not
+    create_directory(output_directory);
+
     //Check if the file exists and create if it does not
     create_file(path);
 
@@ -61,6 +92,12 @@ fn perform_file_io(path: &String) {
     set_readonly(file, file_permissions);
 }
 
+fn create_directory(path: &String) {
+    if !Path::new(path).is_dir() {
+        fs::create_dir(path).expect("Error creating directory");
+    }
+}
+
 fn create_file(path: &String) {
     if !Path::new(path).is_file() {
         File::create(path).expect("Error creating file");
@@ -68,6 +105,7 @@ fn create_file(path: &String) {
 }
 
 fn open_file(path: &String) -> File {
+    println!("filename: {}", path);
     //Open the file
     let file_open_result = File::options().append(true).open(path);
 
