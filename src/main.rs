@@ -1,15 +1,7 @@
-use serde::{Deserialize, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 //declare modules
 mod fileio;
-
-//decorate the struct to derive from serde Serialize and Deserialize traits
-//strudt to contain the confguration property(ies)
-#[derive(Serialize, Deserialize)]
-struct Configs {
-    output_directory: String,
-}
 
 fn main() -> std::io::Result<()> {
     //Get current timestamp in milliseconds
