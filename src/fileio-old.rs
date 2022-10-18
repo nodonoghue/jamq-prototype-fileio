@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+/* use serde::{Deserialize, Serialize};
 use std::fs;
 use std::fs::{File, Permissions};
 use std::io::prelude::*;
@@ -141,3 +141,4 @@ fn set_readonly(file: File, mut file_permissions: Permissions) {
     file.set_permissions(file_permissions)
         .expect("Error setting file permissions");
 }
+ */
