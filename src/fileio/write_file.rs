@@ -9,10 +9,7 @@ pub fn create_file(path: &String) {
         //if the file does not exist, create it
         match File::create(path) {
             Ok(file) => file,
-            Err(error) => panic!(
-                "Error creating file path, {:?}.   Error:  {:?}",
-                path, error
-            ),
+            Err(error) => panic!("Error creating file path, {path:?}.   Error:  {error:?}"),
         };
     }
 }
@@ -28,7 +25,7 @@ pub fn write_to_file(mut file: File) -> File {
     //Will handle a file write failure with a panic! and message in the terminal
     match file.write_all(contents.as_bytes()) {
         Ok(()) => (),
-        Err(error) => panic!("Error writing to file.  Error Message: {:?}", error),
+        Err(error) => panic!("Error writing to file.  Error Message: {error:?}"),
     };
 
     //return the file

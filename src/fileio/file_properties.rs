@@ -16,6 +16,8 @@ pub fn set_readonly(file: File, mut file_permissions: Permissions) {
     file_permissions.set_readonly(true);
 
     //apply permissions to file
-    file.set_permissions(file_permissions)
-        .expect("Error setting file permissions");
+    match file.set_permissions(file_permissions) {
+        Ok(()) => (),
+        Err(error) => panic!("Error setting file permissions:  {error:?}"),
+    };
 }
