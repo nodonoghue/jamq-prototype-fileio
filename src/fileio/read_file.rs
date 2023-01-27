@@ -11,11 +11,14 @@ struct Configs {
 pub fn open_file(path: String) -> File {
     println!("filename: {}", path);
     //Open the file
-    let file_open_result = File::options().append(true).open(path);
+    let file_open_result = File::options().append(true).open(&path);
 
     //Unwraps the open result to get the file
     //returns the file struct
-    file_open_result.unwrap()
+    match file_open_result {
+        Ok(file) => file,
+        Err(error) => panic!("Error opening file at path {:?}.  {:?}", path, error),
+    }
 }
 
 //get the output directory from settings.json
@@ -28,7 +31,10 @@ pub fn get_output_directory() -> String {
     let contents_str: &str = &contents[..];
 
     //deserialize into a struct
-    let configs: Configs = serde_json::from_str(contents_str).unwrap();
+    let configs: Configs = match serde_json::from_str(contents_str) {
+        Ok(configs) => configs,
+        Err(error) => panic!("Error reading configuration file:  {:?}", error),
+    };
 
     //return the output_directory setting
     configs.output_directory

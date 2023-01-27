@@ -1,7 +1,7 @@
 mod file_directory;
 mod file_properties;
-mod write_file;
 mod read_file;
+mod write_file;
 
 //create a function to wrap calles to the chain of calles required to create the file
 pub fn write_jmq_file(filename: String) {
