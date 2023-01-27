@@ -7,7 +7,13 @@ pub fn create_file(path: &String) {
     //if the file already exists, this function does nothing
     if !Path::new(path).is_file() {
         //if the file does not exist, create it
-        File::create(path).expect("Error creating file");
+        match File::create(path) {
+            Ok(file) => file,
+            Err(error) => panic!(
+                "Error creating file path, {:?}.   Error:  {:?}",
+                path, error
+            ),
+        };
     }
 }
 //Writes to the specified file
@@ -20,8 +26,10 @@ pub fn write_to_file(mut file: File) -> File {
 
     //Write to the file, unwrap appears to unwrap the underlying type from the result?
     //Will handle a file write failure with a panic! and message in the terminal
-    file.write_all(contents.as_bytes())
-        .expect("Error writing to file");
+    match file.write_all(contents.as_bytes()) {
+        Ok(()) => (),
+        Err(error) => panic!("Error writing to file.  Error Message: {:?}", error),
+    };
 
     //return the file
     file
