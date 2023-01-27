@@ -9,7 +9,7 @@ struct Configs {
 
 //open the file from the path argument
 pub fn open_file(path: String) -> File {
-    println!("filename: {}", path);
+    println!("filename: {path}");
     //Open the file
     let file_open_result = File::options().append(true).open(&path);
 
@@ -17,7 +17,7 @@ pub fn open_file(path: String) -> File {
     //returns the file struct
     match file_open_result {
         Ok(file) => file,
-        Err(error) => panic!("Error opening file at path {:?}.  {:?}", path, error),
+        Err(error) => panic!("Error opening file at path {path:?}.  {error:?}"),
     }
 }
 
@@ -33,7 +33,7 @@ pub fn get_output_directory() -> String {
     //deserialize into a struct
     let configs: Configs = match serde_json::from_str(contents_str) {
         Ok(configs) => configs,
-        Err(error) => panic!("Error reading configuration file:  {:?}", error),
+        Err(error) => panic!("Error reading configuration file:  {error:?}"),
     };
 
     //return the output_directory setting
