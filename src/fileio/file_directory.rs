@@ -26,6 +26,9 @@ pub fn create_directory(path: &String) {
     //check if the path exists, if it does this function does nothing
     if !Path::new(path).is_dir() {
         //if the path does not exist, create it
-        fs::create_dir(path).expect("Error creating directory");
+        match fs::create_dir(path){
+            Ok(()) => (),
+            Err(error) => panic!("Error creating output directory.  {error:?}")
+        }
     }
 }

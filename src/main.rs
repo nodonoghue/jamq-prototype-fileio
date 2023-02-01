@@ -16,10 +16,14 @@ fn main() -> std::io::Result<()> {
 
 //function to get the current timestamp as millis
 fn get_current_timestamp_millis() -> String {
-    //uses std lib to get the current timestamp as a diration since epoch
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or(Duration::new(0, 500))
-        .as_millis()
-        .to_string()
+    let timestap_duration: String = match SystemTime::now().duration_since(UNIX_EPOCH){
+        Ok(duration) => {
+            duration.as_millis().to_string()
+        },
+        Err(_error)=> {
+            Duration::new(0, 500).as_millis().to_string()
+        }
+    };
+    
+    timestap_duration
 }
