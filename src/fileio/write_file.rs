@@ -16,7 +16,6 @@ pub fn create_file(path: &String) {
 //Writes to the specified file
 pub fn write_to_file(mut file: File) -> File {
     //Open the file
-
     //Set the contents to write, currently hard coded for proof of concept
     //TODO:  Refactor later to make the contents an argument passed into the function, not hard coded
     let contents = String::from("Hello, world!");
