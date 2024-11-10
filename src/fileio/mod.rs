@@ -3,7 +3,7 @@ mod file_properties;
 mod read_file;
 mod write_file;
 
-//create a function to wrap calles to the chain of calles required to create the file
+//create a function to wrap calls to the chain of calls required to create the file
 pub fn write_jmq_file(filename: String) {
     //get the output path from the configuration file
     let output_directory: String = read_file::get_output_directory();

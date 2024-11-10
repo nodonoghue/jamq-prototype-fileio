@@ -1,8 +1,8 @@
 use std::fs::{File, Permissions};
 
-//Gets the permissions stuct by using a reference pointer to file
+//Gets the permissions struct by using a reference pointer to file
 pub fn get_file_permissions(file: &File) -> Permissions {
-    //Gete the meta data and unwrwap the result
+    //Get the metadata and unwrap the result
     let file_metadata = file.metadata();
 
     //Create the permissions struct as mutable to allow changes to be made

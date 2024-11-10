@@ -9,7 +9,7 @@ struct Configs {
     output_directory: String,
 }
 
-//create a function to wrap calles to the chain of calles required to create the file
+//create a function to wrap calls to the chain of calls required to create the file
 pub fn write_jmq_file(filename: String) {
     //get the output path from the configuration file
     let output_directory: String = get_output_directory();
@@ -61,7 +61,7 @@ fn get_output_directory() -> String {
     configs.output_directory
 }
 
-//function to return the path string, accempts the timestamp u128
+//function to return the path string, accepts the timestamp u128
 fn get_path(filename: String, output_directory: &String) -> String {
     //set the initial file name to the timestamp
     let mut full_path = output_directory.to_owned();
@@ -122,9 +122,9 @@ fn write_to_file(mut file: File) -> File {
     file
 }
 
-//Gets the permissions stuct by using a reference pointer to file
+//Gets the permissions struct by using a reference pointer to file
 fn get_file_permissions(file: &File) -> Permissions {
-    //Gete the meta data and unwrwap the result
+    //Get the metadata and unwrap the result
     let file_metadata = file.metadata();
 
     //Create the permissions struct as mutable to allow changes to be made

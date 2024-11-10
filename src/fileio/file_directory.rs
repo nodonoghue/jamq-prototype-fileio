@@ -6,7 +6,7 @@ pub fn get_full_path(filename: String, root_path: String) -> String {
     get_path(filename, &root_path)
 }
 
-//function to return the path string, accempts the timestamp u128
+//function to return the path string, accepts the timestamp u128
 fn get_path(filename: String, output_directory: &String) -> String {
     //set the initial file name to the timestamp
     let mut full_path = output_directory.to_owned();
